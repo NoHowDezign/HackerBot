@@ -1,8 +1,6 @@
 package org.hackmaine.ircbot.plugins;
 
 import java.io.File;
-import java.io.FileFilter;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -14,12 +12,12 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipException;
 
-import org.hackmaine.ircbot.EventHandlerRegistry;
+import org.hackmaine.ircbot.eventsystem.EventHandlerRegistry;
 
 import com.google.gson.Gson;
 
 public class ModLoader {
-	private File modDir = new File("./mods");
+	private File modDir = new File("./plugins");
 	private Map<PluginInfo, JarEntry> pluginList = new HashMap<PluginInfo, JarEntry>();
 	private URLClassLoader classLoader;
 	
@@ -82,7 +80,7 @@ public class ModLoader {
 			className = className.replace("/", ".");
 			try {
 				System.out.println("Scanning and loading class.");
-				Class classBeingScanned = classLoader.loadClass(className);
+				Class<?> classBeingScanned = classLoader.loadClass(className);
 				System.out.println("Processing annotations.");
 				processAnnotation(classBeingScanned);
 			} catch (ClassNotFoundException e) {
@@ -91,7 +89,7 @@ public class ModLoader {
 		}
 	}
 	
-	public void processAnnotation(Class classToProcess) {
+	public void processAnnotation(Class<?> classToProcess) {
 		if(classToProcess.getAnnotation(PluginLogic.class) != null) {
 			System.out.println("Class is a logic class.");
 			EventHandlerRegistry.register(classToProcess); //Add the class in question to the handlers

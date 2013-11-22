@@ -1,4 +1,4 @@
-package org.hackmaine.ircbot;
+package org.hackmaine.ircbot.eventsystem.annotations;
 
 import java.lang.annotation.*;
 

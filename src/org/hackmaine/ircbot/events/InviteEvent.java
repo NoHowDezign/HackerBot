@@ -1,6 +1,6 @@
 package org.hackmaine.ircbot.events;
 
-import org.hackmaine.ircbot.Event;
+import org.hackmaine.ircbot.eventsystem.annotations.Event;
 
 public class InviteEvent extends Event {
 	public String targetNick;

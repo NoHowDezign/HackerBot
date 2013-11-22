@@ -13,4 +13,8 @@ public class PluginInfo {
 		return pluginName;
 	}
 	
+	public String getAuthor() {
+		return author;
+	}
+	
 }

@@ -1,0 +1,37 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+dependencies {
+}
+
+defaultTasks 'compile' //Seperate by commas for more
+
+task compile << {
+	print "Hello, world!"
+}
+
+task run(dependsOn: 'compile') << {
+	print "Hello, world!"
+}
+
+eclipse {
+    project {
+        name = 'Program-Scheduler'
+        buildCommand 'org.eclipse.jdt.core.javabuilder'
+        natures 'com.springsource.sts.gradle.core.nature', 'org.eclipse.jdt.groovy.core.groovyNature'
+    }
+    classpath {
+        file {
+            withXml {
+                def node = it.asNode()
+                node.appendNode('classpathentry', [kind: 'src', path: 'src']) //Add the source to the classpath
+				
+				// Add the libraries to the classpath
+				node.appendNode('classpathentry', [kind: 'lib', path: 'libs/gson-2.2.4.jar'])
+				node.appendNode('classpathentry', [kind: 'lib', path: 'libs/pircbot.jar'])
+				
+				node.appendNode('classpathentry', [kind: 'output', path: 'bin']) //Add the output path to the classpath
+            }
+        }
+    }
+}
