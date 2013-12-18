@@ -2,6 +2,8 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 
 dependencies {
+    compile files('./libs/gson-2.2.4.jar')
+	compile files('./libs/pircbot.jar')
 }
 
 defaultTasks 'compile' //Seperate by commas for more
@@ -14,6 +16,12 @@ task run(dependsOn: 'compile') << {
 	print "Hello, world!"
 }
 
+jar {
+    manifest {
+        attributes 'Class-Path': './libs/pircbot.jar, ./libs/gson-2.2.4.jar'
+    }
+}
+
 eclipse {
     project {
         name = 'Program-Scheduler'
@@ -24,7 +32,7 @@ eclipse {
         file {
             withXml {
                 def node = it.asNode()
-                node.appendNode('classpathentry', [kind: 'src', path: 'src']) //Add the source to the classpath
+                node.appendNode('classpathentry', [kind: 'src', path: 'src/main/java']) //Add the source to the classpath
 				
 				// Add the libraries to the classpath
 				node.appendNode('classpathentry', [kind: 'lib', path: 'libs/gson-2.2.4.jar'])
