@@ -1,5 +1,7 @@
 package org.hackmaine.ircbot;
 
+import org.hackmaine.ircbot.commandsystem.CommandAnnotationParser;
+import org.hackmaine.ircbot.commandsystem.annotations.CommandParams;
 import org.hackmaine.ircbot.events.CommandEvent;
 import org.hackmaine.ircbot.events.ConnectEvent;
 import org.hackmaine.ircbot.events.DisconnectEvent;
@@ -11,12 +13,12 @@ import org.jibble.pircbot.PircBot;
 public class HackerBot extends PircBot {
 	
 	public HackerBot() {
-		this.setName("MaineHackerBot");
+		this.setName("MaineHackerBotTest");
 	}
 	
 	public void onMessage(String channel, String sender, String login, String hostname, String message) {
 		if(message.startsWith(".")) {
-			EventAnnotationParser.raiseEvent(new CommandEvent(this, channel, sender, login, hostname, message));
+			CommandAnnotationParser.raiseEvent(new CommandParams(message.split(" ")), this);
 			System.out.println("Recieved a command.");
 		} else {
 			EventAnnotationParser.raiseEvent(new MessageEvent(this, channel, sender, login, hostname, message));

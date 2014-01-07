@@ -12,6 +12,8 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipException;
 
+import org.hackmaine.ircbot.commandsystem.CommandHandlerRegistry;
+import org.hackmaine.ircbot.commandsystem.annotations.CommandLogic;
 import org.hackmaine.ircbot.eventsystem.EventHandlerRegistry;
 
 import com.google.gson.Gson;
@@ -93,6 +95,9 @@ public class ModLoader {
 		if(classToProcess.getAnnotation(PluginLogic.class) != null) {
 			System.out.println("Class is a logic class.");
 			EventHandlerRegistry.register(classToProcess); //Add the class in question to the handlers
+		} else if(classToProcess.getAnnotation(CommandLogic.class) != null) {
+			System.out.println("Class is a command logic class.");
+			CommandHandlerRegistry.register(classToProcess);
 		} else {
 			System.out.println("Not a class w/ an annotation.");
 		}
