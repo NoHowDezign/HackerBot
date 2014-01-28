@@ -14,11 +14,13 @@ import java.util.zip.ZipException;
 
 import org.hackmaine.ircbot.commandsystem.CommandHandlerRegistry;
 import org.hackmaine.ircbot.commandsystem.annotations.CommandLogic;
+import org.hackmaine.ircbot.database.DatabaseManager;
+import org.hackmaine.ircbot.database.DatabaseUsageRegistry;
 import org.hackmaine.ircbot.eventsystem.EventHandlerRegistry;
 
 import com.google.gson.Gson;
 
-public class ModLoader {
+public class PluginLoader {
 	private File modDir = new File("./plugins");
 	private Map<PluginInfo, JarEntry> pluginList = new HashMap<PluginInfo, JarEntry>();
 	private URLClassLoader classLoader;
@@ -41,7 +43,6 @@ public class ModLoader {
 							
 							classLoader = URLClassLoader.newInstance(urls);
 							
-							
 							while(jarEnum.hasMoreElements()) {
 								PluginInfo pInfo = gson.fromJson(new InputStreamReader(plugin.getInputStream(pluginInfo)), PluginInfo.class);
 								
@@ -57,9 +58,8 @@ public class ModLoader {
 									System.out.println("Not a class. Skipping...");
 									continue;
 								}
-								
-								
 							}
+							plugin.close();
 						}
 					} else {
 						System.out.println("Your 'Plugin' is actually a directory! LOL! Evaluating as such...");
@@ -84,23 +84,29 @@ public class ModLoader {
 				System.out.println("Scanning and loading class.");
 				Class<?> classBeingScanned = classLoader.loadClass(className);
 				System.out.println("Processing annotations.");
-				processAnnotation(classBeingScanned);
+				checkClassByReflections(classBeingScanned, pgins.getKey());
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
 		}
 	}
 	
-	public void processAnnotation(Class<?> classToProcess) {
+	public void checkClassByReflections(Class<?> classToProcess, PluginInfo pluginInfo) {
 		if(classToProcess.getAnnotation(PluginLogic.class) != null) {
 			System.out.println("Class is a logic class.");
 			EventHandlerRegistry.register(classToProcess); //Add the class in question to the handlers
 		} else if(classToProcess.getAnnotation(CommandLogic.class) != null) {
 			System.out.println("Class is a command logic class.");
 			CommandHandlerRegistry.register(classToProcess);
+		} else if(classToProcess.isAssignableFrom(DatabaseManager.class)) {
+			//This is called if the class is an extension of database manager, a registry for sandboxing
+			DatabaseUsageRegistry databaseUsage = new DatabaseUsageRegistry();
+			databaseUsage.setPluginsUsingDatabase(pluginInfo.getPluginName(), classToProcess);
 		} else {
 			System.out.println("Not a class w/ an annotation.");
 		}
 	}
+	
+	private class DatabaseUsageRegistryImpl extends DatabaseUsageRegistry {}
 	
 }

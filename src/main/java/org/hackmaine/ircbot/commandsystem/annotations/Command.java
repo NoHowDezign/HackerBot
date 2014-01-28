@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Command {
-	
-	public String helpText = "Nothing setup.";
+	String helpText() default "The developer has not specified help text.";
 
+	boolean requiresArgs() default false;
 }
